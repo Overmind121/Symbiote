@@ -4,17 +4,38 @@ import numpy as np
 eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 
 cap = cv2.VideoCapture(0)
+frame_height = 720
+frame_width = 1280
+cap.set(3, frame_width)
+cap.set(4, frame_height)
 
+prev_location_x = 0
+prev_location_y = 0
+prev_h = 0
+prev_w = 0
 while(True):
     ret, frame = cap.read()
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    eyes = eye_cascade.detectMultiScale(frame, scaleFactor=1.75, minNeighbors=3, minSize=(95,95), maxSize=(145,145))
 
-    for(x,y,w,h) in eyes:
-        cv2.rectangle(frame, (x,y), (x+w, y+h), (255,0,0), 2)
+
+    #adjust_height = frame_height/2
+    #adjust_width = frame_width/2
+
+    eyes = eye_cascade.detectMultiScale(frame, scaleFactor=1.5, minNeighbors=6, minSize=(30, 30), maxSize=(100, 100))
+    detection = 0
+    if len(eyes):
+        for(x,y,w,h) in eyes:
+            cv2.rectangle(frame, (x,y), (x+w, y+h), (255,0,0), 2)
+            thresh = frame[ y:y+h,x:x+w]
+            prev_location_x = x
+            prev_location_y = y
+            prev_w = w
+            prev_h = h
+    else:
+        cv2.rectangle(frame, (prev_location_x, prev_location_y), (prev_location_x + prev_w, prev_location_y + prev_h), (255, 0, 0), 2)
 
     cv2.imshow("feed", frame)
+
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-cap.read()
+
 cv2.destroyAllWindows()
