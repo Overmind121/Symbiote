@@ -34,7 +34,7 @@ eye_center = 0
 
 #Setting up Trackbars
 cv2.namedWindow('Control Panel')  # makes a control panel
-cv2.createTrackbar('Hue', 'Control Panel', 71, 180, nothing)  # default 0 205 255 69 8 12
+cv2.createTrackbar('Hue', 'Control Panel', 121, 180, nothing)  # default 0 205 255 69 8 12
 cv2.createTrackbar('Sat', 'Control Panel', 139, 255, nothing)
 cv2.createTrackbar('Val', 'Control Panel', 0, 255, nothing)
 cv2.createTrackbar('Hrange', 'Control Panel', 51, 127, nothing)
@@ -99,16 +99,17 @@ while(True):
                 area = radius**2*math.pi
                 print(area)
 
-                #Determining whether you are looking right or left
+                #Determining whether you are looking left, right, center
                 cv2.circle(eye, (int(curr_x), int(curr_y)), int(radius), (255, 255, 0), 2, 2)
                 eye_center += radius/3
                 if((curr_x) > (eye_center)):
-                    print("right")
-                if((curr_x) < (eye_center)):
                     print("left")
+                if((curr_x) < (eye_center)):
+                    print("right")
                 print(eye_center)
                 print(curr_x)
 
+        #Displaying feeds
         cv2.imshow("roi", eye)
         cv2.imshow("mask", mask)
         cv2.imshow("two_face", focus_region)
