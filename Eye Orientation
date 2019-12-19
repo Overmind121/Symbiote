@@ -5,7 +5,7 @@ import imutils  # resizing
 import cv2  # opencv itself
 from PIL import ImageGrab  # for screen capture
 #from matplotlib import pyplot as plt
-
+#adding one comment
 def nothing(x):
     pass
 
