@@ -6,6 +6,7 @@ import math
 
 def nothing(x):
     pass
+
 #all HaarCascades
 eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_alt.xml')
@@ -40,6 +41,8 @@ cv2.createTrackbar('Val', 'Control Panel', 0, 255, nothing)
 cv2.createTrackbar('Hrange', 'Control Panel', 51, 127, nothing)
 cv2.createTrackbar('Srange', 'Control Panel', 122, 127, nothing)
 cv2.createTrackbar('Vrange', 'Control Panel', 69, 127, nothing)
+
+#When the program is running
 while(True):
     #initializing the video feed variables
     ret, frame = cap.read()
@@ -95,19 +98,19 @@ while(True):
                 # calculate the radius and center of circle
                 ((curr_x, curr_y), radius) = cv2.minEnclosingCircle(c)
 
-                #Accessing the area of your eye
-                area = radius**2*math.pi
-                print(area)
 
                 #Determining whether you are looking left, right, center
                 cv2.circle(eye, (int(curr_x), int(curr_y)), int(radius), (255, 255, 0), 2, 2)
-                eye_center += radius/3
-                if((curr_x) > (eye_center)):
+                eye_center_outL = eye_center + radius/1.5
+                eye_center_inL = eye_center + radius/2.3
+                eye_center_inR = eye_center + radius/5
+                eye_center_outR = eye_center - radius/5
+                if((curr_x > eye_center_inL) and (curr_x > eye_center_outL)):
                     print("left")
-                if((curr_x) < (eye_center)):
+                if((curr_x) < (eye_center_outR) and curr_x < eye_center_inR):
                     print("right")
-                print(eye_center)
-                print(curr_x)
+                if(curr_x < eye_center_inL and curr_x > eye_center_inR):
+                    print("center")
 
         #Displaying feeds
         cv2.imshow("roi", eye)
