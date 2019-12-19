@@ -1,9 +1,8 @@
 
 import numpy as np  # math libraries
 import cv2  # opencv itself
-import math
 
-
+#This function allows us to fill a paramter when we are making trackbars
 def nothing(x):
     pass
 
@@ -17,12 +16,6 @@ frame_height = 480
 frame_width = 640
 cap.set(3, frame_width)
 cap.set(4, frame_height)
-blob_detect = cv2.SimpleBlobDetector_Params()
-
-#Blob parameters
-blob_detect.filterByArea = True
-blob_detect.minArea = 1500
-detector = cv2.SimpleBlobDetector_create(blob_detect)
 
 #Variables for getting location
 curr_x = 0
@@ -32,6 +25,7 @@ fx, fy, fh, fw = 0,0,0,0
 focus_face = 0
 focus_region = 0
 eye_center = 0
+file = open("orientation", "w")
 
 #Setting up Trackbars
 cv2.namedWindow('Control Panel')  # makes a control panel
@@ -44,6 +38,7 @@ cv2.createTrackbar('Vrange', 'Control Panel', 69, 127, nothing)
 
 #When the program is running
 while(True):
+
     #initializing the video feed variables
     ret, frame = cap.read()
 
@@ -105,10 +100,13 @@ while(True):
                 eye_center_inR = eye_center + radius/5
 
                 if((curr_x > eye_center_inL)):
+                    file.write("Left")
                     print("left")
                 if((curr_x) < (eye_center_inR)):
+                    file.write("Right")
                     print("right")
                 if(curr_x < eye_center_inL and curr_x > eye_center_inR):
+                    file.write("Center")
                     print("center")
 
         #Displaying feeds
