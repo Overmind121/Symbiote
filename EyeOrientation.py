@@ -25,7 +25,10 @@ fx, fy, fh, fw = 0,0,0,0
 focus_face = 0
 focus_region = 0
 eye_center = 0
-file = open("orientation", "w")
+center = False
+left = False
+right = False
+data = 0
 
 #Setting up Trackbars
 cv2.namedWindow('Control Panel')  # makes a control panel
@@ -55,7 +58,7 @@ while(True):
     colorUpper = (hue + hrange, sat + srange, val + vrange)
 
     #Detecting weird faces
-    face = face_cascade.detectMultiScale(frame, scaleFactor=1.3, minNeighbors=5)
+    face = face_cascade.detectMultiScale(frame, scaleFactor=1.3, minNeighbors=5, minSize=(50,50))
     if len(face):
         for(x, y, w, h) in face:
             cv2.rectangle(frame, (x,y), (x+w, y+h), (255,255,255), 2)
@@ -96,28 +99,40 @@ while(True):
 
                 #Determining whether you are looking left, right, center
                 cv2.circle(eye, (int(curr_x), int(curr_y)), int(radius), (255, 255, 0), 2, 2)
-                eye_center_inL = eye_center + radius/2.3
-                eye_center_inR = eye_center + radius/5
+                eye_center_inL = eye_center + radius/2
+                eye_center_inR = eye_center + radius/6
 
                 if((curr_x > eye_center_inL)):
-                    file.write("Left")
                     print("left")
+                    left = True
+                    right = False
+                    center = False
                 if((curr_x) < (eye_center_inR)):
-                    file.write("Right")
                     print("right")
-                if(curr_x < eye_center_inL and curr_x > eye_center_inR):
-                    file.write("Center")
+                    left = False
+                    right = True
+                    center = False
+                if(curr_x < (eye_center_inL) and curr_x > (eye_center_inR)):
                     print("center")
+                    left = False
+                    right = False
+                    center = True
 
-        #Displaying feeds
+       #Opening text file
+        with open("orientation", 'r') as file:
+            data = file.readlines()
+
+        # Displaying feeds
         cv2.imshow("roi", eye)
         cv2.imshow("mask", mask)
         cv2.imshow("two_face", focus_region)
+
+        #Dictating whether to turn left or right
 
     cv2.imshow("feed", frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-
+file.close()
 cv2.destroyAllWindows()
 
