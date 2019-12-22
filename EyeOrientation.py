@@ -100,7 +100,7 @@ while(True):
                         #Determining whether you are looking left, right, center
                         cv2.circle(eye, (int(curr_x), int(curr_y)), int(radius), (255, 255, 0), 2, 2)
                         eye_center_inL = eye_center + radius/2
-                        eye_center_inR = eye_center + radius/6
+                        eye_center_inR = eye_center - radius/2
 
                         if((curr_x > eye_center_inL)):
                             print("left")
