@@ -28,7 +28,7 @@ eye_center = 0
 center = False
 left = False
 right = False
-data = 0
+data = ""
 
 #Setting up Trackbars
 cv2.namedWindow('Control Panel')  # makes a control panel
@@ -58,7 +58,7 @@ while(True):
     colorUpper = (hue + hrange, sat + srange, val + vrange)
 
     #Detecting weird faces
-    face = face_cascade.detectMultiScale(frame, scaleFactor=1.3, minNeighbors=5, minSize=(50,50))
+    face = face_cascade.detectMultiScale(frame, scaleFactor=1.1, minNeighbors=4, minSize=(50,50), maxSize=(200,200))
     if len(face):
         for(x, y, w, h) in face:
             cv2.rectangle(frame, (x,y), (x+w, y+h), (255,255,255), 2)
@@ -67,65 +67,77 @@ while(True):
             fh = h
             focus_face = frame[fy:fy+h, fx:fx+w]
 
-    #Cutting your face in half
-    fw = np.size(focus_face, 1)
-    fww = int(fw/2)
-    focus_region = frame[fy:fy+fh, fx:fx+fww]
+            #Cutting your face in half
+            fw = np.size(focus_face, 1)
+            fww = int(fw/2)
+            focus_region = frame[fy:fy+fh, fx:fx+fww]
 
-    #Detecting eye...hope your not asian
-    eyes = eye_cascade.detectMultiScale(focus_region, scaleFactor=1.4, minNeighbors=6, minSize=(45, 45), maxSize=(100, 100))
-    if len(eyes):
-        for(ex,ey,ew,eh) in eyes:
+            #Detecting eye...hope your not asian
+            eyes = eye_cascade.detectMultiScale(focus_region, scaleFactor=1.4, minNeighbors=6, minSize=(45, 45), maxSize=(100, 100))
+            if len(eyes):
+                for(ex,ey,ew,eh) in eyes:
 
-            #Drawing rectangle around the eye
-            cv2.rectangle(focus_region, (ex,ey), (ex+ew, ey+eh), (255,0,0), 2)
-            eye = focus_region[ey:ey+eh,ex:ex+ew]
+                    #Drawing rectangle around the eye
+                    cv2.rectangle(focus_region, (ex,ey), (ex+ew, ey+eh), (255,0,0), 2)
+                    eye = focus_region[ey:ey+eh,ex:ex+ew]
 
-            #Cutting your eye in half
-            eye_center = ew/2
+                    #Cutting your eye in half
+                    eye_center = ew/2
 
-            hsv = cv2.cvtColor(eye, cv2.COLOR_BGR2HSV)
-            mask = cv2.inRange(hsv, colorLower, colorUpper)
-            cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
+                    hsv = cv2.cvtColor(eye, cv2.COLOR_BGR2HSV)
+                    mask = cv2.inRange(hsv, colorLower, colorUpper)
+                    cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
 
-            #If the program detects your pupil
-            if len(cnts) > 0:
-                # c is the biggest contour array
-                c = max(cnts, key=cv2.contourArea)
+                    #If the program detects your pupil
+                    if len(cnts) > 0:
+                        # c is the biggest contour array
+                        c = max(cnts, key=cv2.contourArea)
 
-                # calculate the radius and center of circle
-                ((curr_x, curr_y), radius) = cv2.minEnclosingCircle(c)
+                        # calculate the radius and center of circle
+                        ((curr_x, curr_y), radius) = cv2.minEnclosingCircle(c)
 
 
-                #Determining whether you are looking left, right, center
-                cv2.circle(eye, (int(curr_x), int(curr_y)), int(radius), (255, 255, 0), 2, 2)
-                eye_center_inL = eye_center + radius/2
-                eye_center_inR = eye_center + radius/6
+                        #Determining whether you are looking left, right, center
+                        cv2.circle(eye, (int(curr_x), int(curr_y)), int(radius), (255, 255, 0), 2, 2)
+                        eye_center_inL = eye_center + radius/2
+                        eye_center_inR = eye_center + radius/6
 
-                if((curr_x > eye_center_inL)):
-                    print("left")
-                    left = True
-                    right = False
-                    center = False
-                if((curr_x) < (eye_center_inR)):
-                    print("right")
-                    left = False
-                    right = True
-                    center = False
-                if(curr_x < (eye_center_inL) and curr_x > (eye_center_inR)):
-                    print("center")
-                    left = False
-                    right = False
-                    center = True
+                        if((curr_x > eye_center_inL)):
+                            print("left")
+                            left = True
+                            right = False
+                            center = False
+                        if((curr_x) < (eye_center_inR)):
+                            print("right")
+                            left = False
+                            right = True
+                            center = False
+                        if(curr_x < (eye_center_inL) and curr_x > (eye_center_inR)):
+                            print("center")
+                            left = False
+                            right = False
+                            center = True
 
+                    cv2.imshow("roi", eye)
+                    cv2.imshow("mask", mask)
+                    cv2.imshow("two_face", focus_region)
        #Opening text file
         with open("orientation", 'r') as file:
             data = file.readlines()
 
+        if(left):
+            data[0] = "left"
+        elif(right):
+            data[0] = "right"
+        else:
+            data[0] = "center"
+
+        with open("orientation", "w") as file:
+            file.writelines(data[0])
+
         # Displaying feeds
-        cv2.imshow("roi", eye)
-        cv2.imshow("mask", mask)
-        cv2.imshow("two_face", focus_region)
+
+
 
         #Dictating whether to turn left or right
 
