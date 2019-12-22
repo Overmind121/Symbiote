@@ -84,6 +84,10 @@ while(True):
                     #Cutting your eye in half
                     eye_center = ew/2
 
+                    thresh = cv2.threshold(eye, 42, 255, cv2.THRESH_BINARY)
+                    thresh = cv2.erode(thresh, None, iterations=2)
+                    thresh = cv2.medianBlur(thresh, 5)
+
                     #Detecting your pupil
                     hsv = cv2.cvtColor(eye, cv2.COLOR_BGR2HSV)
                     mask = cv2.inRange(hsv, colorLower, colorUpper)
@@ -123,6 +127,7 @@ while(True):
                     cv2.imshow("roi", eye)
                     cv2.imshow("mask", mask)
                     cv2.imshow("two_face", focus_region)
+                    cv2.imshow("threshold", thresh)
 
        #Opening text file
         with open("orientation", 'r') as file:
