@@ -1,4 +1,4 @@
-
+#Importing other people's functions
 import numpy as np  # math libraries
 import cv2  # opencv itself
 
@@ -6,7 +6,7 @@ import cv2  # opencv itself
 def nothing(x):
     pass
 
-#all HaarCascades
+#All HaarCascades
 eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_alt.xml')
 
@@ -73,7 +73,7 @@ while(True):
             focus_region = frame[fy:fy+fh, fx:fx+fww]
 
             #Detecting eye...hope your not asian
-            eyes = eye_cascade.detectMultiScale(focus_region, scaleFactor=1.4, minNeighbors=6, minSize=(45, 45), maxSize=(100, 100))
+            eyes = eye_cascade.detectMultiScale(focus_region, scaleFactor=1.6, minNeighbors=5)
             if len(eyes):
                 for(ex,ey,ew,eh) in eyes:
 
@@ -84,16 +84,17 @@ while(True):
                     #Cutting your eye in half
                     eye_center = ew/2
 
+                    #Detecting your pupil
                     hsv = cv2.cvtColor(eye, cv2.COLOR_BGR2HSV)
                     mask = cv2.inRange(hsv, colorLower, colorUpper)
                     cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
 
                     #If the program detects your pupil
                     if len(cnts) > 0:
-                        # c is the biggest contour array
+                        #C is the biggest contour array
                         c = max(cnts, key=cv2.contourArea)
 
-                        # calculate the radius and center of circle
+                        #Calculate the radius and center of circle
                         ((curr_x, curr_y), radius) = cv2.minEnclosingCircle(c)
 
 
@@ -118,13 +119,16 @@ while(True):
                             right = False
                             center = True
 
+                    #Displaying the masking, eye detection, and half of your face
                     cv2.imshow("roi", eye)
                     cv2.imshow("mask", mask)
                     cv2.imshow("two_face", focus_region)
+
        #Opening text file
         with open("orientation", 'r') as file:
             data = file.readlines()
 
+        #Writing the program's result on that file
         if(left):
             data[0] = "left"
         elif(right):
@@ -135,12 +139,7 @@ while(True):
         with open("orientation", "w") as file:
             file.writelines(data[0])
 
-        # Displaying feeds
-
-
-
-        #Dictating whether to turn left or right
-
+    #Displaying overall feed
     cv2.imshow("feed", frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
