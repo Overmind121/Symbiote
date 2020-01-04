@@ -73,7 +73,7 @@ while(True):
             focus_region = frame[fy:fy+fh, fx:fx+fww]
 
             #Detecting eye...hope your not asian
-            eyes = eye_cascade.detectMultiScale(focus_region, scaleFactor=1.6, minNeighbors=5)
+            eyes = eye_cascade.detectMultiScale(focus_region, scaleFactor=1.3, minNeighbors=5)
             if len(eyes):
                 for(ex,ey,ew,eh) in eyes:
 
