@@ -84,7 +84,7 @@ while(True):
                     #Cutting your eye in half
                     eye_center = ew/2
 
-                    #thresh = cv2.threshold(eye, 42, 255, cv2.THRESH_BINARY)
+                    thresh = cv2.threshold(eye, 42, 255, cv2.THRESH_BINARY)
                     #thresh = cv2.erode(thresh, None, iterations=2)
                     #thresh = cv2.medianBlur(thresh, 5)
 
@@ -105,7 +105,7 @@ while(True):
                         #Determining whether you are looking left, right, center
                         cv2.circle(eye, (int(curr_x), int(curr_y)), int(radius), (255, 255, 0), 2, 2)
                         eye_center_inL = eye_center + radius/2
-                        eye_center_inR = eye_center - radius/2
+                        eye_center_inR = eye_center + radius/6
 
                         if((curr_x > eye_center_inL)):
                             print("left")
@@ -127,7 +127,6 @@ while(True):
                     cv2.imshow("roi", eye)
                     cv2.imshow("mask", mask)
                     cv2.imshow("two_face", focus_region)
-                    cv2.imshow("threshold", thresh)
 
        #Opening text file
         with open("orientation", 'r') as file:
