@@ -85,8 +85,9 @@ while(True):
                     eye_center = ew/2
 
                     thresh = cv2.threshold(eye, 42, 255, cv2.THRESH_BINARY)
-                    #thresh = cv2.erode(thresh, None, iterations=2)
-                    #thresh = cv2.medianBlur(thresh, 5)
+                    if(thresh != 0):
+		    	thresh = cv2.erode(thresh, None, iterations=2)
+                    	thresh = cv2.medianBlur(thresh, 5)
 
                     #Detecting your pupil
                     hsv = cv2.cvtColor(eye, cv2.COLOR_BGR2HSV)
@@ -127,7 +128,8 @@ while(True):
                     cv2.imshow("roi", eye)
                     cv2.imshow("mask", mask)
                     cv2.imshow("two_face", focus_region)
-
+	            if(thresh != 0):
+			cv2.imshow("Thresh", thresh) 
        #Opening text file
         with open("orientation", 'r') as file:
             data = file.readlines()
