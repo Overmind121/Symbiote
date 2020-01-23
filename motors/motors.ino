@@ -16,5 +16,9 @@ void loop(){
   if(Serial.read() == 102){
     motorL.run(FORWARD);
     motorR.run(FORWARD);
+    delay(5000);
+    motorL.run(RELEASE);
+    motorR.run(RELEASE);
+    delay(1000);
   } 
 }
