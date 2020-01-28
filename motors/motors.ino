@@ -28,11 +28,13 @@ void loop(){
     motorL.run(FORWARD);
     motorR.run(RELEASE);
   }
+  
   if(Serial.read() == 114){ //right
     motorL.run(RELEASE);
     motorR.run(FORWARD);
   } 
-  if(Serial.read() == 83){
+  
+  if(Serial.read() == 83){ //stop
     motorL.run(RELEASE);
     motorR.run(RELEASE);
   }
