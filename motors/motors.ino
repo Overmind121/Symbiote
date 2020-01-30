@@ -1,4 +1,5 @@
 #include <AFMotor.h>
+#include <AFMotor.h>
 //Forward is char character:102
 //Backward is char character: 98
 //Left is char character: 108
@@ -14,25 +15,32 @@ void setup(){
 }
 
 void loop(){
-  if(Serial.read() == 102){ //forward
+  byte comm = Serial.read();
+  if (comm < 254){
+    Serial.println(comm);
+  }
+  Serial.println(comm);
+  if(comm == 102){ //forward
     motorL.run(FORWARD);
     motorR.run(FORWARD);
 
   }
-  if(Serial.read() == 98){ //backward
+  if(comm == 98){ //backward
     motorL.run(BACKWARD);
     motorR.run(BACKWARD);
 
   }
-  if(Serial.read() == 108){ //Left
+  if(comm == 108){ //Left
     motorL.run(FORWARD);
     motorR.run(RELEASE);
   }
-  if(Serial.read() == 114){ //right
+  
+  if(comm == 114){ //right
     motorL.run(RELEASE);
     motorR.run(FORWARD);
   } 
-  if(Serial.read() == 83){
+  
+  if(comm == 115){ //stop
     motorL.run(RELEASE);
     motorR.run(RELEASE);
   }
