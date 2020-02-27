@@ -1,6 +1,7 @@
 #Importing other people's functions
 import numpy as np  # math libraries
 import cv2  # opencv itself
+import socket
 
 #This function allows us to fill a paramter when we are making trackbars
 def nothing(x):
@@ -18,6 +19,7 @@ cap.set(3, frame_width)
 cap.set(4, frame_height)
 
 #Variables for getting location
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 curr_x = 0
 curr_y = 0
 ex, ey, eh, ew = 0,0,0,0
@@ -30,10 +32,14 @@ left = False
 right = False
 data = ""
 
+#socket stuff
+s.connect(('192.168.1.147', 5560))
+message_abroad = ""
+
 #Setting up Trackbars
 cv2.namedWindow('Control Panel')  # makes a control panel
-cv2.createTrackbar('Hue', 'Control Panel', 121, 180, nothing)  # default 0 205 255 69 8 12
-cv2.createTrackbar('Sat', 'Control Panel', 139, 255, nothing)
+cv2.createTrackbar('Hue', 'Control Panel', 123, 180, nothing)  # default 0 205 255 69 8 12
+cv2.createTrackbar('Sat', 'Control Panel', 199, 255, nothing)
 cv2.createTrackbar('Val', 'Control Panel', 0, 255, nothing)
 cv2.createTrackbar('Hrange', 'Control Panel', 51, 127, nothing)
 cv2.createTrackbar('Srange', 'Control Panel', 122, 127, nothing)
@@ -85,10 +91,6 @@ while(True):
                     eye_center = ew/2
 
                     thresh = cv2.threshold(eye, 42, 255, cv2.THRESH_BINARY)
-                    if(thresh != 0):
-		    	thresh = cv2.erode(thresh, None, iterations=2)
-                    	thresh = cv2.medianBlur(thresh, 5)
-
                     #Detecting your pupil
                     hsv = cv2.cvtColor(eye, cv2.COLOR_BGR2HSV)
                     mask = cv2.inRange(hsv, colorLower, colorUpper)
@@ -108,28 +110,31 @@ while(True):
                         eye_center_inL = eye_center + radius/2
                         eye_center_inR = eye_center + radius/6
 
-                        if((curr_x > eye_center_inL)):
-                            print("left")
+                        if((curr_x < eye_center_inL)):
+                            print("turning_right")
+                            message_abroad="left"
                             left = True
                             right = False
                             center = False
-                        if((curr_x) < (eye_center_inR)):
-                            print("right")
+                        if((curr_x) > (eye_center_inR)):
+                            print("turning_left")
+                            message_abroad ="right"
                             left = False
                             right = True
                             center = False
-                        if(curr_x < (eye_center_inL) and curr_x > (eye_center_inR)):
-                            print("center")
+                        if(curr_x > (eye_center_inL) and curr_x < (eye_center_inR+6)):
+                            print("going forward")
+                            message_abroad = "center"
                             left = False
                             right = False
                             center = True
+                        s.send(message_abroad.encode())
 
                     #Displaying the masking, eye detection, and half of your face
                     cv2.imshow("roi", eye)
                     cv2.imshow("mask", mask)
                     cv2.imshow("two_face", focus_region)
-	            if(thresh != 0):
-			cv2.imshow("Thresh", thresh) 
+
        #Opening text file
         with open("orientation", 'r') as file:
             data = file.readlines()

@@ -5,7 +5,7 @@
 //Left is char character: 108
 //right is char character: 114
 //stop is char characterL 83
-AF_DCMotor motorL(3, MOTOR34_64KHZ);
+AF_DCMotor motorL(1, MOTOR34_64KHZ);
 AF_DCMotor motorR(4, MOTOR34_64KHZ);
 
 void setup(){
