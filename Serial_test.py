@@ -30,7 +30,7 @@ try:
             ser.write("r")
             
         if msg == "center":
-            ser.write("s")
+            ser.write("f")
         if msg == "":
             break
         else:
