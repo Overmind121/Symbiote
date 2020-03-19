@@ -33,7 +33,7 @@ right = False
 data = ""
 
 #socket stuff
-s.connect(('192.168.1.147', 5560))
+s.connect(('192.168.1.22', 5560))
 message_abroad = ""
 
 #Setting up Trackbars
@@ -107,27 +107,27 @@ while(True):
 
                         #Determining whether you are looking left, right, center
                         cv2.circle(eye, (int(curr_x), int(curr_y)), int(radius), (255, 255, 0), 2, 2)
-                        eye_center_inL = eye_center + radius/2
-                        eye_center_inR = eye_center + radius/6
+                        error = curr_x - eye_center
 
-                        if((curr_x < eye_center_inL)):
-                            print("turning_right")
+                        if(error > 1.5):
+                            print("L")
                             message_abroad="left"
                             left = True
                             right = False
                             center = False
-                        if((curr_x) > (eye_center_inR)):
-                            print("turning_left")
+                        elif(error < -1.5):
+                            print("R")
                             message_abroad ="right"
                             left = False
                             right = True
                             center = False
-                        if(curr_x > (eye_center_inL) and curr_x < (eye_center_inR+6)):
-                            print("going forward")
+                        else:
+                            print("F")
                             message_abroad = "center"
                             left = False
                             right = False
                             center = True
+                        #print(error)
                         s.send(message_abroad.encode())
 
                     #Displaying the masking, eye detection, and half of your face
