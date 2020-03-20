@@ -1,7 +1,7 @@
 #Importing other people's functions
 import numpy as np  # math libraries
 import cv2  # opencv itself
-import socket
+import socket # network communcation between pi and the computer
 
 #This function allows us to fill a paramter when we are making trackbars
 def nothing(x):
@@ -19,7 +19,7 @@ cap.set(3, frame_width)
 cap.set(4, frame_height)
 
 #Variables for getting location
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 curr_x = 0
 curr_y = 0
 ex, ey, eh, ew = 0,0,0,0
@@ -33,13 +33,13 @@ right = False
 data = ""
 
 #socket stuff
-s.connect(('192.168.1.22', 5560))
+#s.connect(('192.168.1.22', 5560))
 message_abroad = ""
 
 #Setting up Trackbars
 cv2.namedWindow('Control Panel')  # makes a control panel
-cv2.createTrackbar('Hue', 'Control Panel', 123, 180, nothing)  # default 0 205 255 69 8 12
-cv2.createTrackbar('Sat', 'Control Panel', 199, 255, nothing)
+cv2.createTrackbar('Hue', 'Control Panel', 87, 180, nothing)  # default 0 205 255 69 8 12
+cv2.createTrackbar('Sat', 'Control Panel', 132, 255, nothing)
 cv2.createTrackbar('Val', 'Control Panel', 0, 255, nothing)
 cv2.createTrackbar('Hrange', 'Control Panel', 51, 127, nothing)
 cv2.createTrackbar('Srange', 'Control Panel', 122, 127, nothing)
@@ -109,13 +109,13 @@ while(True):
                         cv2.circle(eye, (int(curr_x), int(curr_y)), int(radius), (255, 255, 0), 2, 2)
                         error = curr_x - eye_center
 
-                        if(error > 1.5):
+                        if(error > 1.3):
                             print("L")
                             message_abroad="left"
                             left = True
                             right = False
                             center = False
-                        elif(error < -1.5):
+                        elif(error < -1.3):
                             print("R")
                             message_abroad ="right"
                             left = False
@@ -128,33 +128,20 @@ while(True):
                             right = False
                             center = True
                         #print(error)
-                        s.send(message_abroad.encode())
+                        #s.send(message_abroad.encode())
 
                     #Displaying the masking, eye detection, and half of your face
                     cv2.imshow("roi", eye)
                     cv2.imshow("mask", mask)
                     cv2.imshow("two_face", focus_region)
 
-       #Opening text file
-        with open("orientation", 'r') as file:
-            data = file.readlines()
-
-        #Writing the program's result on that file
-        if(left):
-            data[0] = "left"
-        elif(right):
-            data[0] = "right"
-        else:
-            data[0] = "center"
-
-        with open("orientation", "w") as file:
-            file.writelines(data[0])
 
     #Displaying overall feed
+    cv2.putText(frame, message_abroad, (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,0,0), 2, cv2.LINE_AA)
     cv2.imshow("feed", frame)
+
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-file.close()
 cv2.destroyAllWindows()
 
