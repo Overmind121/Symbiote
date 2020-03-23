@@ -2,7 +2,7 @@
 import numpy as np  # math libraries
 import cv2  # opencv itself
 import socket # network communcation between pi and the computer
-import dlib
+
 
 #This function allows us to fill a paramter when we are making trackbars
 def nothing(x):
