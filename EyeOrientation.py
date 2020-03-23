@@ -2,6 +2,7 @@
 import numpy as np  # math libraries
 import cv2  # opencv itself
 import socket # network communcation between pi and the computer
+import dlib
 
 #This function allows us to fill a paramter when we are making trackbars
 def nothing(x):
@@ -19,7 +20,7 @@ cap.set(3, frame_width)
 cap.set(4, frame_height)
 
 #Variables for getting location
-#s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 curr_x = 0
 curr_y = 0
 ex, ey, eh, ew = 0,0,0,0
@@ -33,7 +34,7 @@ right = False
 data = ""
 
 #socket stuff
-#s.connect(('192.168.1.22', 5560))
+s.connect(('192.168.1.22', 5560))
 message_abroad = ""
 
 #Setting up Trackbars
@@ -109,13 +110,13 @@ while(True):
                         cv2.circle(eye, (int(curr_x), int(curr_y)), int(radius), (255, 255, 0), 2, 2)
                         error = curr_x - eye_center
 
-                        if(error > 1.3):
+                        if(error > 1.5):
                             print("L")
                             message_abroad="left"
                             left = True
                             right = False
                             center = False
-                        elif(error < -1.3):
+                        elif(error < -1.5):
                             print("R")
                             message_abroad ="right"
                             left = False
@@ -128,7 +129,7 @@ while(True):
                             right = False
                             center = True
                         #print(error)
-                        #s.send(message_abroad.encode())
+                        s.send(message_abroad.encode())
 
                     #Displaying the masking, eye detection, and half of your face
                     cv2.imshow("roi", eye)
