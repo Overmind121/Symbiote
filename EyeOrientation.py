@@ -2,7 +2,6 @@
 import numpy as np  # math libraries
 import cv2  # opencv itself
 import socket # network communcation between pi and the computer
-import dlib
 
 #This function allows us to fill a paramter when we are making trackbars
 def nothing(x):
@@ -13,14 +12,14 @@ eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_alt.xml')
 
 #Setting up s***
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 frame_height = 480
 frame_width = 640
 cap.set(3, frame_width)
 cap.set(4, frame_height)
 
 #Variables for getting location
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 curr_x = 0
 curr_y = 0
 ex, ey, eh, ew = 0,0,0,0
@@ -32,10 +31,11 @@ center = False
 left = False
 right = False
 data = ""
+message_abroad = ""
 
 #socket stuff
-s.connect(('192.168.1.22', 5560))
-message_abroad = ""
+#s.connect(('192.168.1.22', 5560))
+#message_abroad = ""
 
 #Setting up Trackbars
 cv2.namedWindow('Control Panel')  # makes a control panel
@@ -91,7 +91,6 @@ while(True):
                     #Cutting your eye in half
                     eye_center = ew/2
 
-                    thresh = cv2.threshold(eye, 42, 255, cv2.THRESH_BINARY)
                     #Detecting your pupil
                     hsv = cv2.cvtColor(eye, cv2.COLOR_BGR2HSV)
                     mask = cv2.inRange(hsv, colorLower, colorUpper)
@@ -129,7 +128,7 @@ while(True):
                             right = False
                             center = True
                         #print(error)
-                        s.send(message_abroad.encode())
+                        #s.send(message_abroad.encode())
 
                     #Displaying the masking, eye detection, and half of your face
                     cv2.imshow("roi", eye)
