@@ -1,13 +1,18 @@
 import dlib
 import cv2
 import numpy as np
-import socket 
+import socket
 
 def midpoint(p1, p2):
     return int((p1.x+p2.x)/2), int((p1.y+p2.y)/2)
 
 def nothing(x):
     pass
+
+#socket stuff
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(('192.168.1.22', 5560))
+message_abroad = ""
 
 cap = cv2.VideoCapture(1)
 
@@ -72,11 +77,14 @@ while(True):
         center_white = extreme_right_white+extreme_left_white
         if(right_side_white > left_side_white and right_side_white>center_white):
             cv2.putText(frame, "right", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+            message_abroad = "right"
         elif(left_side_white > right_side_white and left_side_white > center_white):
             cv2.putText(frame, "left", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2, cv2.LINE_AA)
+            message_abroad = "left"
         else:
             cv2.putText(frame, "center", (50, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 2, cv2.LINE_AA)
-
+            message_abroad = "center"
+        s.send(message_abroad.encode())
         #cv2.putText(frame, str(right_side_white), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
         #cv2.putText(frame, str(left_side_white), (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
         cv2.imshow("eye",left_eye)
