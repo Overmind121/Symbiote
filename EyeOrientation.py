@@ -12,7 +12,7 @@ eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_alt.xml')
 
 #Setting up s***
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 frame_height = 480
 frame_width = 640
 cap.set(3, frame_width)

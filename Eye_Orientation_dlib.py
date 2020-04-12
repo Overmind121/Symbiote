@@ -1,7 +1,7 @@
 import dlib
 import cv2
 import numpy as np
-import socket
+#import socket
 
 def midpoint(p1, p2):
     return int((p1.x+p2.x)/2), int((p1.y+p2.y)/2)
@@ -10,17 +10,17 @@ def nothing(x):
     pass
 
 #socket stuff
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(('192.168.1.22', 5560))
+#s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#s.connect(('192.168.1.22', 5560))
 message_abroad = ""
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 cv2.namedWindow("Control Panel")
-cv2.createTrackbar("Threshold", "Control Panel", 19, 255, nothing)
+cv2.createTrackbar("Threshold", "Control Panel", 19 , 255, nothing)
 
 while(True):
     ret, frame = cap.read()
@@ -63,15 +63,15 @@ while(True):
         height, width = threshold_eye.shape
 
         left_side_threshold = threshold_eye[0: height, 0:int(width/2)]
-        left_side_white =cv2.countNonZero(left_side_threshold)
+        left_side_white = cv2.countNonZero(left_side_threshold)
 
         right_side_threshold = threshold_eye[0:height, int(width/2):width]
         right_side_white = cv2.countNonZero(right_side_threshold)
 
-        extreme_left_threshold = threshold_eye[0:height, 0:int(width/4)]
+        extreme_left_threshold = threshold_eye[0:height, 0:int(width/3)]
         extreme_left_white = cv2.countNonZero(extreme_left_threshold)
 
-        extreme_right_threshold = threshold_eye[0:height, int(width/1.25):width]
+        extreme_right_threshold = threshold_eye[0:height, int(width/1.3):width]
         extreme_right_white = cv2.countNonZero(extreme_right_threshold)
 
         center_white = extreme_right_white+extreme_left_white
@@ -84,7 +84,7 @@ while(True):
         else:
             cv2.putText(frame, "center", (50, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 2, cv2.LINE_AA)
             message_abroad = "center"
-        s.send(message_abroad.encode())
+       # s.send(message_abroad.encode())
         #cv2.putText(frame, str(right_side_white), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
         #cv2.putText(frame, str(left_side_white), (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
         cv2.imshow("eye",left_eye)
